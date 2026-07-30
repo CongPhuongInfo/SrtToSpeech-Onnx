@@ -1,7 +1,7 @@
 # SrtToSpeech
 
 <p align="center">
-  <img src="IntentBot-logo.png" width="500">
+  <img src="SrtToSpeech-Onnx-logo.png" width="500">
 </p>
 
 
