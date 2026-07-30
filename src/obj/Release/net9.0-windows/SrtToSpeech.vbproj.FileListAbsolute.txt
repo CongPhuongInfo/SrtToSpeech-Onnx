@@ -18,3 +18,24 @@ C:\Users\Administrator\Downloads\SrtToSpeech\src\obj\Release\net9.0-windows\refi
 C:\Users\Administrator\Downloads\SrtToSpeech\src\obj\Release\net9.0-windows\SrtToSpeech.pdb
 C:\Users\Administrator\Downloads\SrtToSpeech\src\obj\Release\net9.0-windows\SrtToSpeech.genruntimeconfig.cache
 C:\Users\Administrator\Downloads\SrtToSpeech\src\obj\Release\net9.0-windows\ref\SrtToSpeech.dll
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\bin\Data\Female\README.txt
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\bin\Data\Male\README.txt
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\bin\Data\Male\giong_cua_toi.onnx
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\bin\Data\Male\giong_cua_toi.onnx.json
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\bin\SrtToSpeech.exe
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\bin\SrtToSpeech.deps.json
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\bin\SrtToSpeech.runtimeconfig.json
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\bin\SrtToSpeech.dll
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\bin\SrtToSpeech.pdb
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\SrtToSpeech.vbproj.AssemblyReference.cache
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\SrtToSpeech.GeneratedMSBuildEditorConfig.editorconfig
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\SrtToSpeech.AssemblyInfoInputs.cache
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\SrtToSpeech.AssemblyInfo.vb
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\SrtToSpeech.vbproj.CoreCompileInputs.cache
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\SrtToSpeech.sourcelink.json
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\SrtToSpe.1D6FB50B.Up2Date
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\SrtToSpeech.dll
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\refint\SrtToSpeech.dll
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\SrtToSpeech.pdb
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\SrtToSpeech.genruntimeconfig.cache
+D:\Source Code\Tool-Video\SrtToSpeech-Onnx\src\obj\Release\net9.0-windows\ref\SrtToSpeech.dll
