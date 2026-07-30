@@ -1,0 +1,118 @@
+HUONG DAN SU DUNG - SrtToSpeech (WinForms)
+============================================
+
+Ung dung Windows (giao dien do hoa) doc file phu de .srt va tong hop
+giong noi bang mo hinh Piper TTS, sau do xuat ra 1 file .wav voi loi
+thoai dat dung moc thoi gian cua tung dong phu de. Ho tro thu vien
+nhieu giong doc (Nam / Nu / mo rong them sau nay) va che do long
+tieng nhieu giong bang nhan [Ten] trong file srt.
+
+0) CAU TRUC THU MUC
+--------------------
+    SrtToSpeech\
+      src\                  <- TOAN BO MA NGUON (.vb, .vbproj)
+        SrtToSpeech.vbproj
+        Program.vb
+        MainForm.vb
+        SrtParser.vb
+        PiperVoice.vb
+        WavFile.vb
+        VoiceLibrary.vb
+        Data\               <- thu vien giong doc (nam ben trong src)
+          Male\
+          Female\
+      bin\                  <- NOI XUAT RA sau khi build (ban dau rong)
+      restore_nuget.bat     <- B1: tai cac goi NuGet can thiet
+      build.bat             <- B2: bien dich + dong goi ra bin\
+      HUONG_DAN.txt
+
+  Ly do tach rieng: "src" la noi ban chinh sua code, "bin" la noi
+  nhan ket qua build cuoi cung (file .exe de chay/phan phoi) - khong
+  lo lan giua source va binary.
+
+1) CAI DAT CONG CU CAN THIET
+-----------------------------
+  a. .NET 9 SDK (chon ban Windows)
+     https://dotnet.microsoft.com/download/dotnet/9.0
+
+  b. eSpeak NG (dung de phien am van ban tieng Viet sang IPA truoc khi
+     dua vao mo hinh - day la cach Piper phien am van ban goc)
+     https://github.com/espeak-ng/espeak-ng/releases
+     Sau khi cai, dam bao "espeak-ng" chay duoc tu Command Prompt
+     (them thu muc cai dat vao bien moi truong PATH), hoac chon truc
+     tiep duong dan toi espeak-ng.exe ngay trong giao dien ung dung.
+
+  Luu y: day la ung dung WinForms (net9.0-windows) nen CHI build va
+  chay duoc tren Windows.
+
+2) THEM GIONG DOC VAO THU VIEN (truoc khi build)
+---------------------------------------------------
+  Dat file .onnx + .json vao trong src\Data\Male\ hoac src\Data\Female\
+  (co the tao them thu muc loai khac trong src\Data\ neu muon).
+
+  Moi giong can 2 file CUNG TEN GOC (chi khac phan duoi), vi du:
+
+      src\Data\Male\giong_cua_toi.onnx
+      src\Data\Male\giong_cua_toi_onnx.json
+
+  Ten file .json duoc nhan dien theo vai kieu pho bien:
+      <ten>.onnx.json  |  <ten>_onnx.json  |  <ten>.json
+
+3) BUILD DU AN (2 buoc)
+--------------------------
+  Mo Command Prompt tai thu muc goc SrtToSpeech\ (noi co 2 file .bat),
+  chay lan luot:
+
+      restore_nuget.bat      (chi can chay 1 lan, hoac khi doi may)
+      build.bat               (moi lan sua code / them giong moi can build lai)
+
+  Sau khi build xong, moi thu nam san trong thu muc bin\:
+
+      bin\SrtToSpeech.exe
+      bin\Data\Male\...
+      bin\Data\Female\...
+
+  Muon them/bot giong SAU KHI da build ma khong build lai: co the them
+  thang file .onnx + .json vao bin\Data\Male hoac bin\Data\Female roi
+  mo app, bam "Lam moi danh sach".
+
+4) SU DUNG
+----------
+  1. Mo bin\SrtToSpeech.exe
+  2. Chon che do: "Giong don" hoac "Long tieng nhieu giong"
+  3. (Giong don) Chon Loai giong + Giong doc trong thu vien
+     (Long tieng)  Chon file .srt da gan nhan [Ten] roi bam "Quet nhan
+     tu file SRT", sau do voi moi nhan chon Loai giong + Giong doc
+  4. Chon file .srt va noi luu file .wav ket qua
+  5. Chinh "Toc do doc" neu muon (1.0 = binh thuong, >1 doc cham hon,
+     <1 doc nhanh hon)
+  6. Bam "Bat dau chuyen doi" va theo doi nhat ky xu ly + thanh tien
+     trinh. Co the bam "Huy" bat cu luc nao.
+
+5) CHE DO LONG TIENG NHIEU GIONG
+-----------------------------------
+  Gan nhan [Ten] o DAU dong thoai trong file .srt - van la file .srt
+  binh thuong, mo duoc boi bat ky trinh phu de nao khac:
+
+      12
+      00:00:12,000 --> 00:00:14,500
+      [Nam] Anh nghi sao ve chuyen nay?
+
+      13
+      00:00:15,000 --> 00:00:17,000
+      [Nu] Toi nghi la duoc do.
+
+  Dong KHONG co nhan [Ten] se dung giong "(mac dinh)". Ten nhan tuy y,
+  khong bat buoc phai la "Nam"/"Nu" (vi du [Ba A], [Ong B]...), mien
+  la ban gan dung giong cho no trong bang sau khi quet.
+
+6) LUU Y
+--------
+  - Neu 1 cau thoai duoc tong hop dai hon thoi luong hien thi cua dong
+    phu de do, chuong trinh van giu nguyen do dai giong noi (khong cat
+    bot) va se canh bao trong nhat ky co the chong lan sang cau ke
+    tiep. Ban co the tang "Toc do doc" (>1) de doc nhanh hon cho khop
+    thoi luong.
+  - Day la ban tu xay dung viec phien am (khong dung thu vien
+    piper-phonemize goc) nen chat luong phat am co the khac mot chut so
+    voi Piper chinh thuc, nhat la voi tu vay muon/ky tu dac biet.

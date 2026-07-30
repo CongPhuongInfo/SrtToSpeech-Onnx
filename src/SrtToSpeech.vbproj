@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <StartupObject>SrtToSpeech.Program</StartupObject>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+    <!-- Cho phép publish thành 1 file .exe duy nhất khi chạy build.bat -->
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Thư viện chạy mô hình ONNX (Piper TTS) -->
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.20.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Tự động sao chép toàn bộ thư mục Data (Male/Female/... + các file .onnx, .json bên trong)
+         sang thư mục build/publish mỗi khi biên dịch, giữ nguyên cấu trúc thư mục con. -->
+    <None Include="Data\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
