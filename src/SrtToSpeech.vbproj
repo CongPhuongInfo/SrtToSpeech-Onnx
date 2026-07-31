@@ -26,4 +26,30 @@
     <None Include="Data\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- TÙY CHỌN: đặt cả thư mục "eSpeak NG" (lấy nguyên từ chỗ cài eSpeak NG, ví dụ copy cả
+         "C:\Program Files\eSpeak NG" thành thư mục "eSpeak NG" ngay cạnh file .vbproj này) -
+         bên trong gồm espeak-ng.exe, libespeak-ng.dll, espeak-ng-data\...
+         Build sẽ tự copy 3 thứ này ra thẳng gốc thư mục bin (không giữ thư mục con "eSpeak NG"),
+         vì code (DllImport/AppContext.BaseDirectory) cần chúng nằm ngay cạnh SrtToSpeech.exe.
+         Không bắt buộc - thiếu thì app vẫn chạy, chỉ là dùng phương án dự phòng (cần cài eSpeak NG
+         riêng và/hoặc trỏ đường dẫn espeak-ng.exe thủ công trong giao diện). -->
+    <None Include="eSpeak NG\libespeak-ng.dll" Condition="Exists('eSpeak NG\libespeak-ng.dll')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libespeak-ng.dll</Link>
+    </None>
+
+    <None Include="eSpeak NG\espeak-ng.exe" Condition="Exists('eSpeak NG\espeak-ng.exe')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>espeak-ng.exe</Link>
+    </None>
+
+    <!-- Thư mục dữ liệu ngôn ngữ đi kèm, giữ nguyên cấu trúc con nhưng bỏ tiền tố "eSpeak NG\"
+         khi copy sang bin, để thành bin\espeak-ng-data\... -->
+    <None Include="eSpeak NG\espeak-ng-data\**\*" Condition="Exists('eSpeak NG\espeak-ng-data')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>espeak-ng-data\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+  </ItemGroup>
+
 </Project>

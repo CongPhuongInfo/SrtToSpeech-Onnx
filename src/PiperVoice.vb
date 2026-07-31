@@ -17,8 +17,15 @@ Public Class PiperVoice
 
     Private ReadOnly _session As InferenceSession
     Private ReadOnly _phonemeIdMap As Dictionary(Of String, Integer)
+    Private ReadOnly _sortedPhonemeKeys As List(Of String)
     Private ReadOnly _espeakVoice As String
     Public Property EspeakPath As String = "espeak-ng"
+
+    ''' <summary>
+    ''' Gọi lại (nếu được gán) khi gặp ký hiệu IPA không có trong phoneme_id_map của model,
+    ''' để nơi dùng PiperVoice (ví dụ MainForm) có thể ghi log cảnh báo cho người dùng biết.
+    ''' </summary>
+    Public Property OnWarning As Action(Of String)
 
     Public Property SampleRate As Integer
     Public Property NoiseScale As Single
@@ -69,6 +76,15 @@ Public Class PiperVoice
             End If
         End Using
 
+        ' Sắp xếp các ký hiệu phoneme theo độ dài giảm dần (dùng cho tokenize kiểu "khớp dài nhất").
+        ' Nhiều ký hiệu IPA thực chất gồm nhiều codepoint (chữ cái gốc + dấu kết hợp như mũi hoá,
+        ' kéo dài âm...) - nếu tách theo từng Char đơn lẻ như trước đây thì các dấu kết hợp này sẽ
+        ' bị bóc ra riêng và không khớp được với map (bị bỏ qua), làm mất sắc thái phát âm.
+        _sortedPhonemeKeys = _phonemeIdMap.Keys.
+            Where(Function(k) k <> PAD AndAlso k <> BOS AndAlso k <> EOS AndAlso k.Length > 0).
+            OrderByDescending(Function(k) k.Length).
+            ToList()
+
         Dim options As New SessionOptions()
         _session = New InferenceSession(onnxModelPath, options)
     End Sub
@@ -94,15 +110,56 @@ Public Class PiperVoice
             If segment.Length = 0 Then Continue For
 
             Dim ipa = RunEspeak(segment)
-            For Each ch In ipa
-                ' Bỏ qua ký tự nối âm (tie bar) và khoảng trắng thừa, giữ lại khoảng trắng phân tách từ
-                If ch = ChrW(&H361) Then Continue For ' tie bar U+0361
-                phonemes.Add(ch.ToString())
-            Next
+            ' Bỏ ký tự nối âm (tie bar) trước khi tokenize - đây không phải 1 phoneme độc lập,
+            ' chỉ là dấu nối 2 ký hiệu IPA đứng cạnh nhau thành 1 âm ghép (ví dụ affricate).
+            ipa = ipa.Replace(ChrW(&H361).ToString(), "")
+
+            phonemes.AddRange(TokenizeIpaToPhonemes(ipa))
             phonemes.Add(" ")
         Next
 
         Return phonemes
+    End Function
+
+    ''' <summary>
+    ''' Tách chuỗi IPA thô (do espeak-ng xuất ra) thành danh sách phoneme khớp với
+    ''' phoneme_id_map của chính model đang dùng, theo kiểu "khớp dài nhất trước"
+    ''' (giống cách piper_phonemize thực sự làm) thay vì tách từng ký tự Unicode đơn lẻ.
+    ''' Lý do: nhiều ký hiệu IPA gồm nhiều codepoint (chữ cái gốc + dấu kết hợp như mũi hoá,
+    ''' kéo dài âm, trọng âm...) - tách sai sẽ làm rơi mất dấu kết hợp và sai/mất âm khi đọc.
+    ''' </summary>
+    Private Function TokenizeIpaToPhonemes(ipa As String) As List(Of String)
+        Dim result As New List(Of String)
+        Dim i = 0
+        Dim unknownChars As New List(Of String)
+
+        While i < ipa.Length
+            Dim matched As String = Nothing
+
+            For Each key In _sortedPhonemeKeys
+                If key.Length <= ipa.Length - i AndAlso String.CompareOrdinal(ipa, i, key, 0, key.Length) = 0 Then
+                    matched = key
+                    Exit For
+                End If
+            Next
+
+            If matched IsNot Nothing Then
+                result.Add(matched)
+                i += matched.Length
+            Else
+                ' Không khớp được ký hiệu nào trong phoneme_id_map - ghi nhận để cảnh báo,
+                ' rồi bỏ qua đúng 1 ký tự (thay vì cả cụm) để không lỡ nuốt luôn ký tự kế tiếp
+                ' hợp lệ đứng ngay sau nó.
+                unknownChars.Add($"U+{AscW(ipa(i)):X4} '{ipa(i)}'")
+                i += 1
+            End If
+        End While
+
+        If unknownChars.Count > 0 AndAlso OnWarning IsNot Nothing Then
+            OnWarning.Invoke($"Bỏ qua {unknownChars.Count} ký hiệu IPA không có trong phoneme_id_map: {String.Join(", ", unknownChars.Distinct())}")
+        End If
+
+        Return result
     End Function
 
     Private Function SplitKeepingPunctuation(text As String) As List(Of String)
@@ -123,10 +180,57 @@ Public Class PiperVoice
         Return result
     End Function
 
+    Private _nativeChecked As Boolean = False
+    Private _useNative As Boolean = False
+
     ''' <summary>
-    ''' Chạy espeak-ng.exe với chế độ xuất IPA (--ipa) cho một đoạn văn bản ngắn.
+    ''' Đường dẫn thư mục "espeak-ng-data" dùng cho libespeak-ng.dll (nếu có đóng gói kèm app).
+    ''' Để trống = tự dò trong thư mục chạy app (bin\espeak-ng-data), rồi tới đường dẫn cài đặt
+    ''' mặc định của hệ thống.
+    ''' </summary>
+    Public Property EspeakDataPath As String = ""
+
+    Private Function AutoDetectEspeakDataPath() As String
+        If Not String.IsNullOrWhiteSpace(EspeakDataPath) Then Return EspeakDataPath
+        Dim bundled = Path.Combine(AppContext.BaseDirectory, "espeak-ng-data")
+        If Directory.Exists(bundled) Then Return bundled
+        Return Nothing ' để libespeak-ng tự dò đường dẫn cài đặt mặc định của hệ thống
+    End Function
+
+    ''' <summary>
+    ''' Phiên âm 1 đoạn văn bản ngắn thành IPA. Ưu tiên gọi thẳng "libespeak-ng.dll" qua P/Invoke
+    ''' (nhanh và khớp với cách piper_phonemize thật sự làm lúc train); nếu không khởi tạo được
+    ''' (chưa đóng gói DLL kèm app, thiếu dữ liệu ngôn ngữ...) thì tự động rơi về cách cũ: gọi
+    ''' "espeak-ng.exe" như một tiến trình con.
     ''' </summary>
     Private Function RunEspeak(segment As String) As String
+        If Not _nativeChecked Then
+            _nativeChecked = True
+            _useNative = EspeakNative.TryInitialize(AutoDetectEspeakDataPath()) AndAlso EspeakNative.EnsureVoice(_espeakVoice)
+            If _useNative Then
+                OnWarning?.Invoke("Dùng libespeak-ng.dll (native) để phiên âm.")
+            Else
+                OnWarning?.Invoke("Không tìm thấy/khởi tạo được libespeak-ng.dll, dùng espeak-ng.exe (subprocess) để phiên âm.")
+            End If
+        End If
+
+        If _useNative Then
+            Try
+                Return EspeakNative.TextToIpa(segment)
+            Catch ex As Exception
+                _useNative = False ' lỗi giữa chừng -> chuyển hẳn về subprocess cho các câu còn lại
+                OnWarning?.Invoke("Lỗi khi dùng libespeak-ng.dll (" & ex.Message & "), chuyển sang espeak-ng.exe.")
+            End Try
+        End If
+
+        Return RunEspeakSubprocess(segment)
+    End Function
+
+    ''' <summary>
+    ''' Chạy espeak-ng.exe với chế độ xuất IPA (--ipa) cho một đoạn văn bản ngắn.
+    ''' Dùng làm phương án dự phòng khi không gọi được libespeak-ng.dll trực tiếp.
+    ''' </summary>
+    Private Function RunEspeakSubprocess(segment As String) As String
         Dim psi As New ProcessStartInfo() With {
             .FileName = EspeakPath,
             .UseShellExecute = False,

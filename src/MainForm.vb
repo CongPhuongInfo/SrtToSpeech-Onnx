@@ -695,6 +695,7 @@ Public Class MainForm
                 Log("Config: " & singleConfigPath)
                 Dim v As New PiperVoice(singleModelPath, singleConfigPath)
                 v.EspeakPath = espeakPath
+                v.OnWarning = AddressOf Log
                 voiceCache(singleModelPath) = v
                 commonSampleRate = v.SampleRate
             Else
@@ -731,6 +732,7 @@ Public Class MainForm
                             Log($"Đang nạp giọng ""{info.Name}""...")
                             Dim newVoice As New PiperVoice(info.OnnxPath, info.ConfigPath)
                             newVoice.EspeakPath = espeakPath
+                            newVoice.OnWarning = AddressOf Log
                             voiceCache(info.OnnxPath) = newVoice
                             commonSampleRate = newVoice.SampleRate
                         End If

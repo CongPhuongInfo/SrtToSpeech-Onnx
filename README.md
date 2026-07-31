@@ -4,7 +4,6 @@
   <img src="SrtToSpeech-Onnx-logo.png" width="500">
 </p>
 
-
 Ứng dụng Windows (WinForms) đọc file phụ đề `.srt` và tổng hợp giọng nói bằng mô hình **Piper TTS**, xuất ra 1 file `.wav` với lời thoại đặt đúng mốc thời gian của từng dòng phụ đề.
 
 Hỗ trợ:
@@ -136,7 +135,31 @@ Dòng **không** có nhãn `[Tên]` sẽ dùng giọng **"(mặc định)"**. T�
 
 ---
 
-## 7. Xử lý lỗi thường gặp (Troubleshooting)
+## 8. Dùng libespeak-ng.dll trực tiếp (nhanh + chính xác hơn espeak-ng.exe)
+
+Mặc định app gọi `espeak-ng.exe` như 1 tiến trình con để phiên âm (đơn giản, dễ cài qua nút **⬇ Cài đặt**). Nhưng nếu muốn nhanh hơn và khớp gần như tuyệt đối với cách `piper_phonemize` (bản gốc, dùng lúc train model) phiên âm, bạn có thể đóng gói thẳng thư viện gốc `libespeak-ng.dll` kèm app — không cần cài đặt gì ở máy người dùng, không cần bấm nút **⬇ Cài đặt** nữa.
+
+**Cách lấy 2 thứ cần thiết** (từ 1 máy đã cài eSpeak NG, ví dụ bằng chính nút **⬇ Cài đặt** trong app):
+
+1. `libespeak-ng.dll` — nằm tại `C:\Program Files\eSpeak NG\libespeak-ng.dll`
+2. Thư mục `espeak-ng-data\` — nằm tại `C:\Program Files\eSpeak NG\espeak-ng-data\`
+
+**Đặt vào project** (cùng cấp với `SrtToSpeech.vbproj`, tức trong `src\`):
+
+```
+src\libespeak-ng.dll
+src\espeak-ng-data\...   (copy nguyên cả thư mục)
+```
+
+Build lại (`build.bat` hoặc `build_dev.bat`) — 2 mục trên sẽ tự động được copy sang `bin\`. App khi chạy sẽ tự phát hiện và ưu tiên dùng `libespeak-ng.dll`; nếu không thấy, tự động rơi về gọi `espeak-ng.exe` như trước, không cần chỉnh gì thêm.
+
+Trong "Nhật ký xử lý" khi chạy chuyển đổi, dòng đầu tiên sẽ cho biết app đang dùng cách nào:
+- `Dùng libespeak-ng.dll (native) để phiên âm.`
+- `Không tìm thấy/khởi tạo được libespeak-ng.dll, dùng espeak-ng.exe (subprocess) để phiên âm.`
+
+---
+
+## 9. Xử lý lỗi thường gặp (Troubleshooting)
 
 **`vbc : error BC30420: 'Sub Main' was not found in 'SrtToSpeech.Program'`**
 → Do namespace bị lồng đôi (`RootNamespace` mặc định trùng với `Namespace SrtToSpeech` khai báo thủ công trong các file `.vb`). Đã khắc phục bằng cách bỏ khối `Namespace ... End Namespace` khỏi toàn bộ file trong `src\`.
