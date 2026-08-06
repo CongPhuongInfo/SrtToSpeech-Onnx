@@ -302,11 +302,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Source Code\\Tool-Video\\SrtToSpeech-Onnx\\src\\SrtToSpeech.vbproj",
+      "projectUniqueName": "C:\\Users\\Administrator\\Downloads\\SrtToSpeech-Onnx\\src\\SrtToSpeech.vbproj",
       "projectName": "SrtToSpeech",
-      "projectPath": "D:\\Source Code\\Tool-Video\\SrtToSpeech-Onnx\\src\\SrtToSpeech.vbproj",
+      "projectPath": "C:\\Users\\Administrator\\Downloads\\SrtToSpeech-Onnx\\src\\SrtToSpeech.vbproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "D:\\Source Code\\Tool-Video\\SrtToSpeech-Onnx\\src\\obj\\",
+      "outputPath": "C:\\Users\\Administrator\\Downloads\\SrtToSpeech-Onnx\\src\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config"

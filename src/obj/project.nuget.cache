@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "3ARrlcBVHjg=",
+  "dgSpecHash": "x3Oh0rUigwQ=",
   "success": true,
-  "projectFilePath": "D:\\Source Code\\Tool-Video\\SrtToSpeech-Onnx\\src\\SrtToSpeech.vbproj",
+  "projectFilePath": "C:\\Users\\Administrator\\Downloads\\SrtToSpeech-Onnx\\src\\SrtToSpeech.vbproj",
   "expectedPackageFiles": [
     "C:\\Users\\Administrator\\.nuget\\packages\\microsoft.ml.onnxruntime\\1.20.0\\microsoft.ml.onnxruntime.1.20.0.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\microsoft.ml.onnxruntime.managed\\1.20.0\\microsoft.ml.onnxruntime.managed.1.20.0.nupkg.sha512",
